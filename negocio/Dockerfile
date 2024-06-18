@@ -17,10 +17,10 @@ COPY ./negocio/composer.json .
 
 COPY ./negocio/.htaccess .
 
-COPY ./datos/.env .
+#COPY ./datos/.env .
+COPY ./negocio/.env . 
 
 RUN apt update && apt install -y zip
-
 RUN apt update && apt install -y git
 
 RUN composer install

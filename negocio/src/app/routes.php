@@ -9,11 +9,20 @@ $app->group('/cliente', function(RouteCollectorProxy $cliente){
     $cliente->post('', Cliente::class . ':create');
     //$cliente->get('/{id}', Cliente::class . ':buscar');
     $cliente->get('/read[/{id}]', Cliente::class . ':read');
-    //$cliente->get('/filtro', Cliente::class . ':filtrar');
+    $cliente->get('/filtro', Cliente::class . ':filtrar');
     $cliente->put('/{id}', Cliente::class . ':update');
     $cliente->delete('/{id}', Cliente::class . ':delete');
 });
 
+// Técnico
+$app->group('/tecnico', function(RouteCollectorProxy $tecnico){
+    $tecnico->post('', Cliente::class . ':create');
+    //$cliente->get('/{id}', Tecnico::class . ':buscar');
+    $tecnico->get('/read[/{id}]', Tecnico::class . ':read');
+    $tecnico->get('/filtro', Tecnico::class . ':filtrar');
+    $tecnico->put('/{id}', Tecnico::class . ':update');
+    $tecnico->delete('/{id}', Tecnico::class . ':delete');
+});
 
 //Artefacto
 $app->group('/artefacto', function(RouteCollectorProxy $artefacto){

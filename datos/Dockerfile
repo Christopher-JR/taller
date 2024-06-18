@@ -22,7 +22,6 @@ COPY ./datos/.htaccess .
 COPY ./datos/.env .
 
 RUN apt update && apt install -y zip
-
 RUN apt update && apt install -y git
 
 RUN composer install

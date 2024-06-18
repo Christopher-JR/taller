@@ -3,10 +3,10 @@ namespace App\controllers;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 
-class Cliente extends Persona{
+class Oficinista extends Persona{
 
-    const RECURSO = 'cliente';
-    const ROL = 4;
+    const RECURSO = 'oficinista';
+    const ROL = 2;
 
     /*public function __construct(ContainerInterface $c){
         $this->container=$c;
@@ -14,7 +14,9 @@ class Cliente extends Persona{
 
     function create(Request $request, Response $response, $args) {
         $body = json_decode($request->getBody(), 1);
+        
         $status = $this->createP(self::RECURSO, self::ROL, $body);
+
         return $response->withStatus($status);
     }
 
@@ -38,20 +40,19 @@ class Cliente extends Persona{
     }
 
     function delete(Request $request, Response $response, $args){
-        $status = $this->deleteP(self::RECURSO, $args['id']);
-        return $response->withStatus($status);
+        return $this->deleteP(self::RECURSO, $args['id']);
     }
 
-    /*function delete(Request $request, Response $response, $args){
-        return $this->deleteP(self::RECURSO, $args['id']);
-    }*/
-
     function filtrar(Request $request, Response $response, $args){
-        $datos = $request->getQueryParams();
-        $resp = $this->filtrarP(self::RECURSO, $datos);
+        if(isset($args['id'])){
+            $resp = $this->filtrarP(self::RECURSO, $args['id']);
+        }else{
+            $resp = $this->filtrarP(self::RECURSO);
+        }
+        
         $response->getBody()->write(json_encode($resp['resp']));
         return $response
-            ->withHeader('Content-type', 'Application/json')
-            ->withStatus($resp['status']);
+                ->withHeader('Content-type', 'Application/json')
+                ->withStatus($resp['status']);
     }
 }

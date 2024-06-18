@@ -14,6 +14,16 @@ $app->group('/cliente', function(RouteCollectorProxy $cliente){
     $cliente->delete('/{id}', Cliente::class . ':delete');
 });
 
+// Técnico
+$app->group('/tecnico', function(RouteCollectorProxy $tecnico){
+    $tecnico->post('', Cliente::class . ':create');
+    //$cliente->get('/{id}', Tecnico::class . ':buscar');
+    $tecnico->get('/read[/{id}]', Tecnico::class . ':read');
+    $tecnico->get('/filtro', Tecnico::class . ':filtrar');
+    $tecnico->put('/{id}', Tecnico::class . ':update');
+    $tecnico->delete('/{id}', Tecnico::class . ':delete');
+});
+
 //Artefacto
 $app->group('/artefacto', function(RouteCollectorProxy $artefacto){
     $artefacto->post('', Artefacto::class . ':create');
@@ -24,6 +34,16 @@ $app->group('/artefacto', function(RouteCollectorProxy $artefacto){
     $artefacto->delete('/{id}', Artefacto::class . ':delete');    
 });
 
-$app->group('/auth', function (RouteCollectorProxy $auth) {
-    $auth->post('/iniciar', Auth::class . ':iniciar');
+// Autenticacion
+$app->group('/auth',function(RouteCollectorProxy $auth){
+    $auth->post('/iniciar', Auth::class . ':iniciar'); 
+    $auth->put('/cerrar/{idUsuario}', Auth::class . ':cerrar');
+    $auth->post('/refrescar', Auth::class . ':refrescar'); 
+});
+
+// Usuario
+$app->group('/usr',function(RouteCollectorProxy $usr){
+    $usr->put('/reset/{idUsuario}', Usuario::class . ':resetearPassw'); 
+    $usr->post('/cambiar/passw', Usuario::class . ':cambiarPassw');
+    $usr->put('/cambiar/rol/{idUsuario}', Usuario::class . ':cambiarRol'); 
 });

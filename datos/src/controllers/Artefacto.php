@@ -112,29 +112,6 @@ class Artefacto {
 
         return $response->withStatus($status);
     }
-
-    /*function buscar(Request $request, Response $response, $args) {
-        $id = $args['id'];
-        
-        $sql = "SELECT * FROM artefacto WHERE id = $id";
-
-      //  $con = $this->conte->get('bd');
-        $con = $this->container->get('bd');
-        
-        $query = $con->prepare($sql);
-
-        $query->execute();
-        //$res = $query->fetchAll(PDO::FETCH_ASSOC);
-        $res = $query->fetchAll();
-        $status = $query->rowCount() > 0 ? 200 : 204;
-        $query = null;
-        $con = null;
-        
-        $response->getBody()->write(json_encode($res));
-        return $response
-                ->withHeader('Content-type', 'Application/json')
-                ->withStatus($status);
-    }*/
     
     function delete  (Request $request, Response $response, $args){
        

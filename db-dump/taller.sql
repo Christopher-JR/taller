@@ -89,10 +89,12 @@ CREATE TABLE `historialCaso` (
 CREATE TABLE `usuario` (
   `id` int NOT NULL,
   `idUsuario` varchar(15) NOT NULL,
-  `correo` varchar (100) NOT NULL,
+  `correo` varchar(100) NOT NULL,
   `rol` int NOT NULL,
   `passw` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_spanish_ci NOT NULL,
-  `ultimoAcceso` datetime DEFAULT NULL
+  `ultimoAcceso` datetime DEFAULT NULL,
+  `tkr` varchar(225) NULL
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_spanish_ci;
 
 --
@@ -163,6 +165,8 @@ ALTER TABLE `historialCaso`
 --
 ALTER TABLE `usuario`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

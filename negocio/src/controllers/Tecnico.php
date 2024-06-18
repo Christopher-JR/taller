@@ -2,10 +2,13 @@
 namespace App\controllers;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+//use Psr\Container\ContainerInterface;
 
-class Cliente {
+// Se agregaron las respectivas rutas en la clase routes.php
 
-    private const URL = "http://web-datos/cliente";
+class Tecnico {
+
+    private const URL = "http://web-datos/tecnico";
 
     private function ejecutarCURL($url, $metodo, $datos = null) {
         $ch = curl_init();
@@ -18,12 +21,14 @@ class Cliente {
         switch($metodo){
             case 'POST' : 
                 curl_setopt($ch, CURLOPT_POST, true);
-                break;            
+                //curl_setopt($ch, CURLOPT_POSTFIELDS, $datos);
+                break;
+            
             case 'PUT': 
             case 'DELETE':
                 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $metodo);
                 break;
-            }
+        }
         
         $resp = curl_exec($ch);
         
