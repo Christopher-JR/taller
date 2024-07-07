@@ -21,13 +21,13 @@ $app->addRoutingMiddleware();
 
 require 'config.php';
 
- /*$app->add(new Tuupola\Middleware\JwtAuthentication([
-     "secure" => false,
-     // "path" => ["/cliente", "/artefacto","/auth"],
-     "ignore" => ["/cliente/read","/auth","/cliente/filtro","/cliente"],
-     "secret" => $container->get('key'),
-     "algorithm" => ["amce" => "HS256"]
- ]));*/
+/*$app->add(new Tuupola\Middleware\JwtAuthentication([
+    "secure" => false,
+    "path" => ["/api"],
+    "ignore" => ["/api/auth"],
+    "secret" => $container->get('key'),
+    "algorithm" => ["acme" => "HS256"]
+]));*/
 
 require 'conexion.php';
 require_once 'routes.php';

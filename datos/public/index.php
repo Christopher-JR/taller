@@ -4,6 +4,11 @@ header('Access-Control-Allow-Headers: X-API-KEY, Origen, X-Request-Width, Conten
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS, PUT, DELETE, PATCH');
 header('Allow: GET, POST, OPTIONS, PUT, DELETE, PATCH');
 
+/*if($_SERVER['REMOTE_ADDR'] != "192.168.0.13"){
+    die('Petición no valida');
+}*/
+
+
 if($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
     die('Metodo no permitido');
 }

@@ -1,5 +1,9 @@
-#manejamos todas las maquinas virtuales, configuracion del entorno
-version: '3.9'
+networks:
+  dto-red:
+    ipam:
+      driver: default
+      config:
+        - subnet: "192.168.0.0/24"
 services:
   db:
     image: mysql:latest
@@ -12,9 +16,9 @@ services:
     volumes:
       - ./mysql:/var/lib/mysql
       - ./db-dump:/docker-entrypoint-initdb.d
-    #networks:
-     # dto-red:
-      #  ip4_address: 192.168.10.10/24
+    networks:
+      dto-red:
+        ipv4_address: "192.168.0.10"
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     container_name: phpmyadmin
@@ -25,9 +29,9 @@ services:
       - PMA_PORT=3306
     depends_on:
       - db
-    #networks:
-     # dto-red:
-      #  ip4_address: 192.168.10.11/24
+    networks:
+      dto-red:
+        ipv4_address: "192.168.10.11"
   web-datos:
     container_name: servidor-web
     build:
@@ -41,9 +45,9 @@ services:
       - 8000:80
     depends_on:
       - db
-    #networks:
-     # dto-red:
-      #  ip4_address: 192.168.10.12/24
+    networks:
+      dto-red:
+        ipv4_address: "192.168.10.12"
   web-negocio:
     container_name: servidor-negocio
     build:
@@ -57,9 +61,21 @@ services:
       - 9000:80
     depends_on:
       - web-datos
-    #networks:
-     # dto-red:
-      #  ip4_address: 192.168.10.13/24
+    networks:
+      dto-red:
+        ipv4_address: "192.168.10.13"
+  web-presentacion:
+    container_name: servidor-presentacion
+    build:
+      context: .
+      dockerfile: ./presentacion/Dockerfile
+    ports:
+      - 80:80
+    depends_on:
+      - web-negocio
+    networks:
+      dto-red:
+        ipv4_address: "192.168.0.14"
 secrets:
   db_password:
     file: db_password.txt

@@ -27,14 +27,13 @@ class Usuario extends Autenticar{
 
     public function cambiarPassw(Request $request, Response $response, $args){
         $body = json_decode($request->getBody());
-        if($this->autenticar($body->idUsuario, $body->passw, true)){
-            $passwN = password_hash($body->passwN['idUsuario'], PASSWORD_BCRYPT, ['cost' => 10]);
-            $datos = $this->editarUsuario(idUsuario : $body->idUsuario, passw : $passwN);
+        if($this->autenticar($args['idUsuario'], $body->passw, true)){
+            $passwN = password_hash($body->passwN, PASSWORD_BCRYPT, ['cost' => 10]);
+            $datos = $this->editarUsuario(idUsuario : $args['idUsuario'], passw : $passwN);
             $status = 200;
         }else{
             $status = 401;
         } 
-        
         return $response->withStatus($status);
     }
 
@@ -48,8 +47,7 @@ class Usuario extends Autenticar{
 
     public function cambiarRol(Request $request, Response $response, $args){
         $body = json_decode($request->getBody());
-        $status = $this->editarUsuario(idUsuario : $args['idUsuario'], passw : $body->rol) 
-                == 0 ? 204 : 200;
+        $status = $this->editarUsuario(idUsuario : $args['idUsuario'], passw : $body->rol) == 0 ? 204 : 200;
         return $response->withStatus($status);
     }
 }

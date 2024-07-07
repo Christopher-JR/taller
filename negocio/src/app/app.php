@@ -19,7 +19,8 @@ $app->addRoutingMiddleware();
 
 $app->add(new Tuupola\Middleware\JwtAuthentication([
     "secure" => false,
-    "ignore" => ["/cliente/read", "/auth", "/cliente"],
+    "path" => ["/api"],
+    "ignore" => ["/api/auth"], 
     "secret" => ["acme" => $_ENV['KEY']],
     "algorithm" => ["acme" => "HS256"]
 ]));

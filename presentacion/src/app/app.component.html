@@ -1,20 +1,35 @@
-<mat-toolbar class="mat-elevation-z3">
-    <button mati-icon-button (click)="collapsed.set(!collapsed())">
-        <mat-icon>menu</mat-icon>
-    </button>
-    <button mati-icon-button>
-        <mat-icon>person</mat-icon>
-    </button>
-</mat-toolbar>
+<div *ngIf="usuario$ | async as usr">
+    <mat-toolbar class="mat-elevation-z3">
+        <button mati-icon-button (click)="collapsed.set(!collapsed())" [disabled]="usr.rol === -1">
+            <mat-icon>menu</mat-icon>
+        </button>
+        <button mati-icon-button [matMenuTriggerFor]="menu" #menuTrigger>
+            <mat-icon>person</mat-icon>
+        </button>
 
-<mat-sidenav-container>
-    
-    <mat-sidenav opened mode="side" [style.width]="sidenavWidth()">
-        <app-side-nav [collapsed] = "collapsed()"></app-side-nav>
-    </mat-sidenav>
-    
-    <mat-sidenav-content class="content"[style.margin-left]="sidenavWidth()">
-        <router-outlet />
-    </mat-sidenav-content>
-</mat-sidenav-container>
+        <mat-menu #menu="matMenu">
+            @if(usr.rol === -1) {
+                <button mat-menu-item [routerLink]="['/login']">Iniciar sesión</button>
+            } @else { 
+                <button mat-menu-item (click)="logOut();">Cerrar sesión</button>
+            }
+            <mat-divider></mat-divider>
+
+            <button mat-menu-item (click)="chagePasswForm()">Cambiar contraseña</button>
+        
+        </mat-menu>
+    </mat-toolbar>
+
+    <mat-sidenav-container>
+        @if(usr.rol > 0){
+            <mat-sidenav opened mode="side" [style.width]="sidenavWidth()">
+                <app-side-nav [collapsed] = "collapsed()"></app-side-nav>
+            </mat-sidenav>
+        }
+        <mat-sidenav-content class="content"[style.margin-left]="sidenavWidth()">
+            <router-outlet />
+        </mat-sidenav-content>
+        
+    </mat-sidenav-container>
+</div>
 

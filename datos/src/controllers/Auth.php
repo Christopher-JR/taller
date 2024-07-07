@@ -92,7 +92,7 @@ class Auth extends Autenticar{
         $payload = [
             'iss' => $_SERVER['SERVER_NAME'],
             'iat' => time(),
-            'exp' => time() + 1000,
+            'exp' => time() + 120,
             'sub' => $idUsuario,
             'rol' => $rol,
             'nom' => $nombre
@@ -134,11 +134,11 @@ class Auth extends Autenticar{
     public function refrescar(Request $request, Response $response, $args){
         $body = json_decode($request->getBody());
         $rol = $this->verificarToken($body->idUsuario, $body->tkRef);
-        $status=200;
+        $status = 200;
         if($rol){
              $datostk=JWT::decode($body->tkRef, new Key($this->container->get('key'),'HS256'));
  
-             $tokens = $this->generarToken($body->idUsuario, $datostk->rol, $datostk->nombre);
+             $tokens = $this->generarToken($body->idUsuario, $datostk->rol, $datostk->nom); //nom
  
              $this->modificarToken(idUsuario : $body->idUsuario, tkRef :  $tokens['tkRef']);
              

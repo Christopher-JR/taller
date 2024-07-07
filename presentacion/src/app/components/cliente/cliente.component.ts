@@ -9,63 +9,158 @@ import { RouterModule } from '@angular/router'
 import {MatExpansionModule} from '@angular/material/expansion';
 import {MatInputModule} from '@angular/material/input';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import { ClienteService } from '../../helpers/services/cliente.service';
+//import { ClienteService } from '../../helpers/services/cliente.service';
+import { ClienteService } from '../../shared/services/cliente.service';
 import { TipoCliente } from '../../helpers/models/interfaces';
-
-/*export interface TipoCliente{
-  id : number,
-  idCliente : string,
-  nombre : string,
-  apellido1 : string,
-  apellido2 : string,
-  telefono : string,
-  celular : string,
-  direccion : string,
-  correo : string,
-  fechaIngreso : string
-};
-
-const ELEMENT_DATA: TipoCliente[] = [
-  {id: 1, idCliente: '011111', nombre: 'Juan', apellido1: 'Valdez', apellido2: 'López', telefono: '2222-3333', celular: '8888-4444', direccion: 'San José', correo: 'juan.valdez@example.com', fechaIngreso: '2024-06-15'},
-  {id: 2, idCliente: '021111', nombre: 'Ricardo', apellido1: 'Valdez', apellido2: 'López', telefono: '2222-3333', celular: '8888-4444', direccion: 'San José', correo: 'juan.valdez@example.com', fechaIngreso: '2024-06-15'},
-  {id: 3, idCliente: '031111', nombre: 'Pedro', apellido1: 'Valdez', apellido2: 'López', telefono: '2222-3333', celular: '8888-4444', direccion: 'San José', correo: 'juan.valdez@example.com', fechaIngreso: '2024-06-15'},
-  {id: 4, idCliente: '041111', nombre: 'Alejandro', apellido1: 'Valdez', apellido2: 'López', telefono: '2222-3333', celular: '8888-4444', direccion: 'San José', correo: 'juan.valdez@example.com', fechaIngreso: '2024-06-15'},
-  {id: 5, idCliente: '051111', nombre: 'Carlos', apellido1: 'Valdez', apellido2: 'López', telefono: '2222-3333', celular: '8888-4444', direccion: 'San José', correo: 'juan.valdez@example.com', fechaIngreso: '2024-06-15'},
-  {id: 6, idCliente: '061111', nombre: 'Felipe', apellido1: 'Valdez', apellido2: 'López', telefono: '2222-3333', celular: '8888-4444', direccion: 'San José', correo: 'juan.valdez@example.com', fechaIngreso: '2024-06-15'},
-  {id: 7, idCliente: '071111', nombre: 'Randy', apellido1: 'Valdez', apellido2: 'López', telefono: '2222-3333', celular: '8888-4444', direccion: 'San José', correo: 'juan.valdez@example.com', fechaIngreso: '2024-06-15'},
-  {id: 8, idCliente: '081111', nombre: 'Christopher', apellido1: 'Valdez', apellido2: 'López', telefono: '2222-3333', celular: '8888-4444', direccion: 'San José', correo: 'juan.valdez@example.com', fechaIngreso: '2024-06-15'},
-  {id: 9, idCliente: '091111', nombre: 'Luis', apellido1: 'Valdez', apellido2: 'López', telefono: '2222-3333', celular: '8888-4444', direccion: 'San José', correo: 'juan.valdez@example.com', fechaIngreso: '2024-06-15'},
-  {id: 10, idCliente: '101111', nombre: 'Kevin', apellido1: 'Valdez', apellido2: 'López', telefono: '2222-3333', celular: '8888-4444', direccion: 'San José', correo: 'juan.valdez@example.com', fechaIngreso: '2024-06-15'},
-  {id: 11, idCliente: '111111', nombre: 'Hector', apellido1: 'Valdez', apellido2: 'López', telefono: '2222-3333', celular: '8888-4444', direccion: 'San José', correo: 'juan.valdez@example.com', fechaIngreso: '2024-06-15'},
-];*/
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { FrmClienteComponent } from '../forms/frm-cliente/frm-cliente.component';
+import { DialogoGeneralComponent } from '../forms/dialogo-general/dialogo-general.component';
+import { UsuarioService } from '../../shared/services/usuario.service';
+import { AuthService } from '../../shared/services/auth.service';
+import { PrintService } from '../../shared/services/print.service';
 
 @Component({
   selector: 'app-cliente',
   standalone: true,
   imports: [MatCardModule, MatDividerModule, MatButtonModule,
     MatPaginator, MatPaginatorModule, MatTableModule, MatIconModule, RouterModule, MatExpansionModule,
-    MatInputModule, MatFormFieldModule
+    MatInputModule, MatFormFieldModule, MatDialogModule
   ],
   templateUrl: './cliente.component.html',
   styleUrl: './cliente.component.scss'
 })
 
 export class ClienteComponent implements AfterViewInit {
-  displayedColumns: string[] = ['id', 'idCliente', 'nombre', 'apellido1', 'apellido2', 'botonera'];
+  displayedColumns: string[] = ['id', 'idUsuario', 'nombre', 'apellido1', 'apellido2', 'correo', 'botonera'];
   private readonly clienteSrv = inject(ClienteService);
+  private readonly dialog = inject(MatDialog);
+  private readonly srvUsuario = inject(UsuarioService);
+  private readonly srvImpresion = inject(PrintService);
+  public rol = inject(AuthService).valorUsrActual.rol;
   //dataSource = new MatTableDataSource<TipoCliente>(ELEMENT_DATA);
   dataSource !: MatTableDataSource<TipoCliente>; //any
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   panelOpenState = signal(false);
+  filtro : any;
 
-  onEditarClick(id : string){
-    alert('Se esta editando ' + id);
+  mostrarDialogo(titulo : string, datos? : TipoCliente){
+    const dialogRef = this.dialog.open(FrmClienteComponent, {
+      width : '40%',
+      data : {
+        title : titulo,
+        datos : datos
+      }
+    });
+    dialogRef.disableClose = true;
+    dialogRef.afterClosed()
+    .subscribe({
+      next: (res) =>{
+        //console.log(res);
+        if(res !== false){
+          this.resetearFiltro();
+          /*this.clienteSrv.getAll().subscribe({
+            next : (datos) => {
+              this.dataSource.data = datos;
+            },
+            error: (err) => {}
+          })*/
+        }
+      },
+        error: (err) => {
+          console.log(err);
+      }
+    })
   }
 
-  onEliminarClick(id : string){
-    alert('Se esta eliminando ' + id);
+  limpiar(){
+    this.resetearFiltro();
+    (document.querySelector('#fidUsuario') as HTMLInputElement).value = '';
+    (document.querySelector('#fnombre') as HTMLInputElement).value = '';
+    (document.querySelector('#fapellido1') as HTMLInputElement).value = '';
+    (document.querySelector('#fapellido2') as HTMLInputElement).value = '';
+  }
+
+  resetearFiltro (){
+    this.filtro = {idUsuario : '',  nombre : '', apellido1: '', apellido2: ''};
+    this.filtrar();
+  }
+
+  filtrar(){
+    this.clienteSrv.filtrarCliente(this.filtro) 
+    .subscribe({
+      next : (data) => this.dataSource.data = data,
+      error: (err) => console.error(err)
+    });
+  }
+
+  onFiltroChange(f : any){
+    this.filtro = f;
+    this.filtrar();
+  }
+
+  onEditarClick(id : number){
+    this.clienteSrv.getCliente(id).subscribe({
+      next : (res) => {
+        //console.log(res);
+        this.mostrarDialogo('Editar Cliente', res);
+      },
+      error : (err) => console.log(err)
+    }) 
+    //alert('Se va a crear nuevo');
+  }
+
+  onEliminarClick(id : number){
+    const dialogRef = this.dialog.open(DialogoGeneralComponent, {
+      data : {
+        texto : '¿Eliminar registro seleccionado?',
+        icono : 'question_mark',
+        textoAceptar : ' Sí ',
+        textoCancelar : ' No '
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result === true){
+        this.clienteSrv.eliminarCliente(id).subscribe((res : any) => {
+          this.resetearFiltro();
+          this.dialog.open(DialogoGeneralComponent, {
+            data : {
+              texto : 'Registro eliminado correctamente',
+              icono : 'check',
+              textoAceptar : ' Aceptar ',
+            }
+          });
+        });
+      }
+    })
+  }
+
+  onResetearClick(idUsuario : string){
+    const dialogRef = this.dialog.open(DialogoGeneralComponent, {
+      data : {
+        texto : '¿Seguro que desea resetear la contraseña?',
+        icono : 'question_mark',
+        textoAceptar : ' Sí ',
+        textoCancelar : ' No '
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if(result === true){
+        this.srvUsuario.resetPassw(idUsuario).subscribe((res : any) => {
+          this.resetearFiltro();
+          this.dialog.open(DialogoGeneralComponent, {
+            data : {
+              texto : 'Contraseña reiniciada correctamente',
+              icono : 'check',
+              textoAceptar : ' Aceptar ',
+            }
+          });
+        });
+      }
+    })
   }
 
   onInfoClick(id : string){
@@ -73,7 +168,36 @@ export class ClienteComponent implements AfterViewInit {
   }
 
   onNuevoClick(){
-    alert('Se va a crear nuevo');
+    this.mostrarDialogo('Nuevo Cliente');
+    //alert('Se va a crear nuevo');
+  }
+
+  onImprimir(){
+    const encabezado = [
+      'Id Cliente',
+      'Nombre',
+      'Telefono',
+      'Celular',
+      'Correo',
+    ];
+    this.clienteSrv.filtrarCliente(this.filtro) 
+    .subscribe({
+      next : (data) => {
+        const cuerpo = Object(data).map((Obj : any) => {
+          const datos = [
+            Obj.idUsuario,
+            `${Obj.nombre} ${Obj.apellido1} ${Obj.apellido2}`,
+            Obj.telefono,
+            Obj.celular,
+            Obj.correo
+          ];
+          return datos;
+        });
+        this.srvImpresion.print(encabezado, cuerpo, 'Listado de clientes', true)
+        console.log(cuerpo);
+      },
+      error: (err) => console.error(err)
+    });
   }
 
   ngAfterViewInit() {

@@ -1,0 +1,50 @@
+<h2 mat-dialog-title>
+    <mat-icon>key</mat-icon>Cambiar contraseña
+</h2>
+<mat-dialog-content>
+    <form id="miFormulario" [formGroup] ="frmPasswChange" (ngSubmit)="cambiarPass();">
+        <mat-form-field>
+            <mat-label>Contrseña</mat-label>
+            <input matInput formControlName="passw" (focus)="passwNoValido=false">
+        </mat-form-field>
+  
+        <mat-form-field>
+            <mat-label>Contraseña nueva</mat-label>
+            <input matInput formControlName="passwN">
+        </mat-form-field> 
+        
+        @if(frmPasswChange.controls['passwN'].invalid && frmPasswChange.controls['passwN'].touched){
+            @if(frmPasswChange.controls['passwN'].errors!['required']){
+                <div class="alert alert-danger">Contrseña es obligatoria</div>    
+            }
+            @if(frmPasswChange.controls['passwN'].errors!['minlength']){
+                <div class="alert alert-danger">Contrseña debe tener al menos 8 caracteres</div>    
+            }
+            @if(frmPasswChange.controls['passwN'].errors!['passwStrenth']){
+                <div class="alert alert-danger">Contrseña no cumple con fortaleza</div>    
+            }
+            
+        }
+
+        <mat-form-field>
+            <mat-label>Repetir contraseña</mat-label>
+            <input matInput formControlName="passwR">
+        </mat-form-field> 
+
+        @if(frmPasswChange.controls['passwR'].invalid && frmPasswChange.controls['passwR'].touched){
+            <div class="alert alert-danger">Contrseña nueva y repetir no son iguales</div> 
+        }
+
+    </form>
+
+    @if(passwNoValido){
+        <div class="alert alert-danger">Contrseña actual no válida</div>
+    }
+
+    
+</mat-dialog-content>
+<mat-dialog-actions style="align-self: flex-end;">
+  <button mat-raised-button  type="submit" form="miFormulario"
+    [disabled]="!frmPasswChange.valid">Enviar</button>
+  <button mat-button [mat-dialog-close]="false">Cancelar</button>
+</mat-dialog-actions>

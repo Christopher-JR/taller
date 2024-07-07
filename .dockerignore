@@ -1,3 +1,14 @@
-/vendor
-composer.lock
-Dockerfile
+**/vendor
+**/composer.lock
+**/Dockerfile
+**/node_modules/
+**/.git
+**/README .md
+**/.vscode
+**/npm-debug.log
+**/coverage
+**/.editorconfig
+**/.aws
+**/dist
+**/.angular
+**/*.tar

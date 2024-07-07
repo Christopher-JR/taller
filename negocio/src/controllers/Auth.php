@@ -4,37 +4,35 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Firebase\JWT\JWT;
 
-class Auth {
-    private $container;
+class Auth extends ServicioCURL {
+    private const ENDPOINT = "/auth";
     
-    private function generarToken(string $idUsuario, int $rol, string $nombre){ 
-        $key = $_ENV["KEY"];
-        $payload = [
-            'iss' => $_SERVER['SERVER_NAME'],
-            'iat' => time(),
-            'exp' => time() + 1000, //60
-            'sub' => $idUsuario,
-            'rol' => $rol,
-            'nom' => $nombre
-        ];
-        $token = JWT::encode($payload, $key, 'HS256');
-        return $token;
-    }
-
     public function iniciar(Request $request, Response $response, $args){
-        $body = $request->getBody();
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "http://web-datos/auth/iniciar"); //esta no es, verificar y cambiarlo en cliente negocio
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $body);
-        $resp = curl_exec($ch);        
-        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        $response->getBody()->write($resp);
+        $datos = $request->getbody();
+        $respA = $this->ejecutarCURL($this::ENDPOINT . '/iniciar', 'POST', $datos);
+        if($respA['resp']){
+            $response->getBody()->write($respA['resp']);
+        }
 
         return $response->withHeader('Content-type', 'Application/json')
-            ->withStatus($status);
+            ->withStatus($respA['status']);
+    }
+
+    public function cerrar(Request $request, Response $response, $args){
+        $datos = $request->getbody();
+        $url = $this::ENDPOINT . "/cerrar/{$args['idUsuario']}";
+        $respA = $this->ejecutarCurl($url,'PATCH');
+        return $response->withStatus($respA['status']);
+    }
+
+    public function refrescar(Request $request, Response $response, $args){
+        $datos = $request->getbody();
+        $url = $this::ENDPOINT . "/refrescar";
+        $respA = $this->ejecutarCurl($url,'PATCH', $datos);
+        
+        $response->getBody()->write($respA['resp']);
+        
+        return $response->withHeader('Content-type', 'Application/json')
+                ->withStatus($respA['status']);
     }
 }
